@@ -36,7 +36,7 @@ then
 	pid=$(cat $DIR/pid)
 	if kill -0 $pid 2>/dev/null
 	then		
-		echo "activity tracker already runnning"
+		echo "activity tracker already runnning as PID=$pid"
 		exit 0
 	fi
 fi
@@ -54,7 +54,7 @@ do
 
 nkeys=$(xinput list |   grep -Po 'id=\K\d+(?=.*slave\s*(keyboard|pointer))' |  xargs -P0 -n1 timeout 5s xinput test|wc -l)
 
-echo $(date +%s)";${nkeys};"$(xdotool getwindowname $(xdotool getactivewindow))
+echo $(date +%s)";${nkeys};"$(xdotool getwindowfocus getwindowname)
 
 done >> $DIR/log
 
