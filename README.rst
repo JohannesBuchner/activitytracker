@@ -41,10 +41,20 @@ Reports
   * Name of class
   * \t as separator
   * Regular expression for matching "title :: executable"
+  
+  for example::
+  
+	Hobby	~/Downloads/activitytracker
+	Lit	JabRef
+	Programming	/usr/bin/gedit
+	Programming	IPython
+	Programming	/usr/lib/gnome-terminal/gnome-terminal-server
+
+  * The first matching class is assigned.
 
 * run report.py::
 
-	$ python3 report.py 
+	$ python report.py 
 	
 	day of the year
 	|
