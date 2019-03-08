@@ -33,4 +33,43 @@ Watch the recording::
 
 	$ tail -f ~/.local/share/activitytracker/log 
 
+Reports
+=============
+
+* Create ~/.local/share/activitytracker/classes defining in each line:
+
+  * Name of class
+  * \t as separator
+  * Regular expression for matching "title :: executable"
+
+* run report.py::
+
+	$ python3 report.py 
+	
+	day of the year
+	|
+	|   hour of day (four for each 15 minutes
+	|   |
+	v   v  
+	DDD-HH Hobb Lit  Prog Rese   <-- classes
+	 66-16 ====               
+	 66-16 ====               
+	 66-16 ===       ==       
+	 66-17 ====      =        
+	 66-17 ====               
+	 66-17 ===       ==       
+	 66-18 =    =         === 
+	 66-18           ==== =   
+	                 \^ 
+	                 |
+	                 bar shows time fraction
+	                 spend on that class
+
+
+License
+==========
+
+2-clause BSD
+
+
 

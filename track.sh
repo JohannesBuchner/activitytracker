@@ -54,7 +54,7 @@ do
 
 nkeys=$(xinput list |   grep -Po 'id=\K\d+(?=.*slave\s*(keyboard|pointer))' |  xargs -P0 -n1 timeout 5s xinput test|wc -l)
 
-echo $(date +%s)";${nkeys};"$(xdotool getwindowfocus getwindowname)
+echo '{"timestamp":'$(date +%s)',"nevents":'${nkeys}',"windowname":"'$(xdotool getwindowfocus getwindowname|sed 's,",\",g')'","exe":"'$(readlink /proc/$(xdotool getwindowfocus getwindowpid)/exe|sed 's,",\",g')'"}'
 
 done >> $DIR/log
 
