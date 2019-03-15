@@ -33,7 +33,7 @@ from collections import Counter
 import re
 import json
 
-dir = os.environ['HOME'] + '/.local/share/activitytracker/'
+dir = os.path.expanduser('~/.local/share/activitytracker/')
 
 def load_patterns():
 	patterns = []
@@ -70,11 +70,14 @@ def read_classes():
 		t, nevents, title = item.get('timestamp'), item.get('nevents',1), item.get('windowname','') + ' :: ' + item.get('exe','')
 
 		t = datetime.datetime.fromtimestamp(t)
-		lastt = t
 		
-		if (t - lastt).days > 7:
+		if nevents < 1:
 			continue
+		
+		#if lastt is not None and (t - lastt).days > 7:
+		#	continue
 
+		lastt = t
 		if lasttitle is not None and title == lasttitle:
 			activity_class = lastclass
 		else:
@@ -95,28 +98,34 @@ def read_classes():
 def read_buckets():
 	lastbucket = None
 	currentcounter = Counter()
+	knowncounter = Counter()
 	unknowncounter = Counter()
 
 	for item, time, title, activity_class in read_classes():
+		startofyear = datetime.date(year=time.year,month=1,day=1)
+		startofday = datetime.datetime(year=time.year,month=time.month,day=time.day,hour=0,minute=0,second=0, tzinfo=time.tzinfo)
 		timebucket = (
 			time.year, 
-			(time.date() - datetime.date(year=time.year,month=1,day=1)).days,
-			int((time - datetime.datetime(year=time.year,month=t0.month,day=t0.day,hour=0,minute=0,second=0)).total_seconds() / 60 / 15),
+			(time.date() - startofyear).days,
+			int((time - startofday).total_seconds() / 60 / 15),
 		)
-		#print(time, timebucket)
+		#print(time, time.tzinfo, timebucket)
 		if lastbucket is None or lastbucket != timebucket:
 			if lastbucket is not None:
-				yield lastbucket, currentcounter, unknowncounter
+				yield lastbucket, currentcounter, knowncounter, unknowncounter
 			currentcounter = Counter()
+			knowncounter = Counter()
 			unknowncounter = Counter()
 		
 		if activity_class == 'unclassified':
 			unknowncounter[title] += 1
+		else:
+			knowncounter[title] += 1
 		currentcounter[activity_class] += 1
 		lastbucket = timebucket
 	
 	if lastbucket is not None:
-		yield lastbucket, currentcounter, unknowncounter
+		yield lastbucket, currentcounter, knowncounter, unknowncounter
 
 def fmt(c,s):
 	if c > s * 3 / 4:
@@ -130,17 +139,23 @@ def fmt(c,s):
 	else:
 		return '    '
 
-print('DDD-HH %s' % (' '.join(['%-4s' % c[:4] for c in classes])))
-
-for bucket, counter, unknowns in read_buckets():
+print('DDD HH %s' % (' '.join(['%-4s' % c[:4] for c in classes])))
+lastbucket = None
+for bucket, counter, knowns, unknowns in read_buckets():
 	s = sum(counter.values())
 	u = ''
 	if unknowns:
 		mostcommon, nunknown = unknowns.most_common(1)[0]
-		if nunknown * 10 > s:
+		if nunknown * 10 > s or True:
 			u = ' | %.2f%%: %s' % (nunknown * 100 / s, mostcommon)
+	else:
+		mostcommon, n = knowns.most_common(1)[0]
+		u = ' | %.2f%%: %s' % (n * 100 / s, mostcommon)
 	
-	print('%3d-%2d %s%s' % (bucket[1], bucket[2]//4, ' '.join([fmt(counter[c], s) for c in classes]), u))
+	if lastbucket is not None and bucket[1] != lastbucket[1]:
+		print()
+	print('%3d %2d %s%s' % (bucket[1], bucket[2]//4, ' '.join([fmt(counter[c], s) for c in classes]), u))
+	lastbucket = bucket
 		
 	
 
