@@ -3,7 +3,7 @@
 # Tracks what you are spending your time on
 # 
 #
-# Copyright (c) 2019 Johannes Buchner
+# Copyright (c) 2019-2023 Johannes Buchner
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
