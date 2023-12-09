@@ -34,10 +34,15 @@ mkdir -p $DIR
 if [ -e $DIR/pid ]
 then
 	pid=$(cat $DIR/pid)
-	if kill -0 $pid 2>/dev/null
+	# check if still running
+	if kill -0 ${pid} 2>/dev/null
 	then		
-		echo "activity tracker already runnning as PID=$pid"
-		exit 0
+		# check if related
+		if grep -q $0 /proc/${pid}/cmdline
+		then
+			echo "activity tracker already runnning as PID=$pid"
+			exit 0
+		fi
 	fi
 fi
 
