@@ -53,6 +53,7 @@ function window_call_info {
 	# call Gnome extension "Window Calls extended" 
 	# https://extensions.gnome.org/extension/4974/window-calls-extended/
 	# needs to be installed!
+	# sed removes all quotes from window title, to avoid json encoding issues
 	gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell/Extensions/WindowsExt --method org.gnome.Shell.Extensions.WindowsExt.$1 | 
 	sed -n "s/^('\(.*\)',)$/\1/g; s/['\"]//g; p"
 }
