@@ -57,14 +57,14 @@ t0 = datetime.datetime.now()
 
 
 def read_classes():
-	lastt = None
+	#lastt = None
 	lastclass = None
 	lasttitle = None
 
 	for line in open(dir + 'log'):
 		try:
 			item = json.loads(line.strip())
-		except json.decoder.JSONDecodeError as e:
+		except json.decoder.JSONDecodeError:
 			#print("Issue parsing line '%s'" % line.strip())
 			continue
 		t, nevents, title = item.get('timestamp'), item.get('nevents',1), item.get('windowname','') + ' :: ' + item.get('exe','')
@@ -77,7 +77,7 @@ def read_classes():
 		#if lastt is not None and (t - lastt).days > 7:
 		#	continue
 
-		lastt = t
+		#lastt = t
 		if lasttitle is not None and title == lasttitle:
 			activity_class = lastclass
 		else:
